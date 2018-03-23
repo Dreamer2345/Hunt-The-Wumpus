@@ -1,9 +1,28 @@
 #pragma once
 
+void MainMenu(){
+  sprites.drawSelfMasked(0,0,Title,0);
+  if (ard.justPressed(A_BUTTON)){
+    gamestate = GameState::StartGame;
+  }
+}
+
+
 void LevelStart(){
   RandomiseRooms();
   Points = 0;
   gamestate = GameState::Update;
+}
+
+void Win(){
+  sprites.drawSelfMasked(CENTERX-24,CENTERY-18,CaughtWumpus,0);
+  ard.setCursor(CENTERX-30,CENTERY+18);
+      ard.print(F("Well Done!"));
+  if (ard.justPressed(A_BUTTON)){
+        RandomiseRooms();
+        gamestate = GameState::Update;
+        Usable = 0;
+      }
 }
 
 void Wumpdeath(){
@@ -27,26 +46,8 @@ void Wumpdeath(){
       ard.setCursor(CENTERX-51,CENTERY+17);
       ard.print(F("A Wumpus ate you!"));
       if (ard.justPressed(A_BUTTON)){
-        gamestate = GameState::StartGame;
+        gamestate = GameState::MainMenu;
         Usable = 0;
-      }
-      if (ard.justPressed(B_BUTTON)){
-        gamestate = GameState::Update;
-        Usable = 0;
-
-        bool Place = false;
-        do {
-          uint8_t r = random(0,19);
-          if (RoomHaz[r] == Hazzard::None)
-            {
-            CurRoom.Room = r;
-            uint8_t Index = 3*r;
-            CurRoom.con[0] = pgm_read_byte(&Cons[Index++]);
-            CurRoom.con[1] = pgm_read_byte(&Cons[Index++]);
-            CurRoom.con[2] = pgm_read_byte(&Cons[Index++]);
-            Place = true;
-            }
-        } while(Place != true);
       }
     }
 }
@@ -74,26 +75,8 @@ void PitDeath(){
     ard.setCursor(CENTERX-54,CENTERY+17);
       ard.print(F("You Fell in a Pit!"));
       if (ard.justPressed(A_BUTTON)){
-        gamestate = GameState::StartGame;
+        gamestate = GameState::MainMenu;
         Usable = 0;
-      }
-      if (ard.justPressed(B_BUTTON)){
-        gamestate = GameState::Update;
-        Usable = 0;
-
-        bool Place = false;
-        do {
-          uint8_t r = random(0,19);
-          if (RoomHaz[r] == Hazzard::None)
-            {
-            CurRoom.Room = r;
-            uint8_t Index = 3*r;
-            CurRoom.con[0] = pgm_read_byte(&Cons[Index++]);
-            CurRoom.con[1] = pgm_read_byte(&Cons[Index++]);
-            CurRoom.con[2] = pgm_read_byte(&Cons[Index++]);
-            Place = true;
-            }
-        } while(Place != true);
       }
   }
 }
@@ -159,6 +142,7 @@ void MovePlayer(){
         SetNextRoom(2);
       }
       if (ard.justPressed(A_BUTTON)){
+        ard.invert(true);
         bool Done = false;
         do{
             if(ard.nextFrame())
@@ -187,6 +171,7 @@ void MovePlayer(){
               ard.display(CLEAR_BUFFER);
               }
         }while(Done == false);
+        ard.invert(false);
       }
 }
 

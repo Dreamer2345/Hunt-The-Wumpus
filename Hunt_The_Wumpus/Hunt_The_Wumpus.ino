@@ -24,7 +24,7 @@ void loop() {
     case GameState::Update: Update(); break;
     case GameState::Pit: PitDeath(); break;
     case GameState::Wumpus: Wumpdeath(); break;
-    case GameState::Win: LevelStart(); break;
+    case GameState::Win: Win(); break;
   }
   ard.display(CLEAR_BUFFER);
 }
