@@ -2,6 +2,7 @@
 Arduboy2 ard;
 Sprites sprites;
 uint8_t Usable = 0;
+uint8_t Points = 0;
 #include "Bitmaps.h"
 #include "ENums.h"
 #include "Rooms.h"
@@ -19,11 +20,11 @@ void loop() {
   ard.pollButtons();
   switch(gamestate){
     case GameState::MainMenu: break;
-    case GameState::StartGame: break;
-    case GameState::Update: break;
+    case GameState::StartGame: LevelStart(); break;
+    case GameState::Update: Update(); break;
     case GameState::Pit: PitDeath(); break;
     case GameState::Wumpus: Wumpdeath(); break;
-    case GameState::Win: break;
+    case GameState::Win: LevelStart(); break;
   }
   ard.display(CLEAR_BUFFER);
 }

@@ -30,6 +30,24 @@ void Wumpdeath(){
         gamestate = GameState::StartGame;
         Usable = 0;
       }
+      if (ard.justPressed(B_BUTTON)){
+        gamestate = GameState::Update;
+        Usable = 0;
+
+        bool Place = false;
+        do {
+          uint8_t r = random(0,19);
+          if (RoomHaz[r] == Hazzard::None)
+            {
+            CurRoom.Room = r;
+            uint8_t Index = 3*r;
+            CurRoom.con[0] = pgm_read_byte(&Cons[Index++]);
+            CurRoom.con[1] = pgm_read_byte(&Cons[Index++]);
+            CurRoom.con[2] = pgm_read_byte(&Cons[Index++]);
+            Place = true;
+            }
+        } while(Place != true);
+      }
     }
 }
 
@@ -59,19 +77,25 @@ void PitDeath(){
         gamestate = GameState::StartGame;
         Usable = 0;
       }
-  }
-}
+      if (ard.justPressed(B_BUTTON)){
+        gamestate = GameState::Update;
+        Usable = 0;
 
-void MovePlayer(){
-      if (ard.justPressed(LEFT_BUTTON)){
-        SetNextRoom(0);
-      } else
-      if (ard.justPressed(RIGHT_BUTTON)){
-        SetNextRoom(1);
-      } else
-      if (ard.justPressed(DOWN_BUTTON)){
-        SetNextRoom(2);
+        bool Place = false;
+        do {
+          uint8_t r = random(0,19);
+          if (RoomHaz[r] == Hazzard::None)
+            {
+            CurRoom.Room = r;
+            uint8_t Index = 3*r;
+            CurRoom.con[0] = pgm_read_byte(&Cons[Index++]);
+            CurRoom.con[1] = pgm_read_byte(&Cons[Index++]);
+            CurRoom.con[2] = pgm_read_byte(&Cons[Index++]);
+            Place = true;
+            }
+        } while(Place != true);
       }
+  }
 }
 
 void CheckMove(){
@@ -123,6 +147,49 @@ void Draw(){
     }
   }
 }
+
+void MovePlayer(){
+      if (ard.justPressed(LEFT_BUTTON)){
+        SetNextRoom(0);
+      } else
+      if (ard.justPressed(RIGHT_BUTTON)){
+        SetNextRoom(1);
+      } else
+      if (ard.justPressed(DOWN_BUTTON)){
+        SetNextRoom(2);
+      }
+      if (ard.justPressed(A_BUTTON)){
+        bool Done = false;
+        do{
+            if(ard.nextFrame())
+              {    
+              ard.pollButtons();
+              Hazzard k = Hazzard::None;
+              if (ard.justPressed(LEFT_BUTTON)){
+                k = GetHazzard(CurRoom.con[0]);
+                Done = true;
+              } else
+              if (ard.justPressed(RIGHT_BUTTON)){
+                k = GetHazzard(CurRoom.con[1]);
+                Done = true;
+              } else
+              if (ard.justPressed(DOWN_BUTTON)){
+                k = GetHazzard(CurRoom.con[2]);
+                Done = true;
+              }
+              
+              if((k == Hazzard::Wumpus)&&(Done == true)){
+                gamestate = GameState::Win;
+              } else {
+                gamestate = GameState::Wumpus;
+              }
+              Draw();
+              ard.display(CLEAR_BUFFER);
+              }
+        }while(Done == false);
+      }
+}
+
 
 void Update(){
   MovePlayer();
