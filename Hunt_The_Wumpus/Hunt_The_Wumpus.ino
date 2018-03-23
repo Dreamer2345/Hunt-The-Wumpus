@@ -21,7 +21,7 @@ void loop() {
     case GameState::MainMenu: break;
     case GameState::StartGame: break;
     case GameState::Update: break;
-    case GameState::Pit: break;
+    case GameState::Pit: PitDeath(); break;
     case GameState::Wumpus: Wumpdeath(); break;
     case GameState::Win: break;
   }
