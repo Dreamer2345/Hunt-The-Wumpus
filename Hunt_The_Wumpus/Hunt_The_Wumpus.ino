@@ -19,7 +19,7 @@ void loop() {
       return;
   ard.pollButtons();
   switch(gamestate){
-    case GameState::MainMenu: break;
+    case GameState::MainMenu: MainMenu(); break;
     case GameState::StartGame: LevelStart(); break;
     case GameState::Update: Update(); break;
     case GameState::Pit: PitDeath(); break;
