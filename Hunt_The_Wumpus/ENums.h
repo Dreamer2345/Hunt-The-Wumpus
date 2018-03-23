@@ -14,4 +14,4 @@ enum class GameState{
   Wumpus,
   Pit,
   Win,
-}gamestate = GameState::Pit;
+}gamestate = GameState::StartGame;

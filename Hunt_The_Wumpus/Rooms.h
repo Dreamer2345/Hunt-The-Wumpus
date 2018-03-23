@@ -5,25 +5,27 @@
 #define CENTERY 31
 #define MAXHAZZARDS 5
 
-const uint8_t PROGMEM Cons[] = {1,4,7,
-                          0,2,9,
-                          1,3,11,
-                          2,13,4,
-                          0,3,5,
-                          14,4,6,
-                          5,7,16,
-                          0,6,10,
+const uint8_t PROGMEM Cons[] = {
+                          7,5,1,      
+                          2,0,9,      
+                          3,1,11,     
+                          4,13,2,     
+                          5,3,0,
+                          4,14,6,
+                          5,16,7,
+                          10,6,0,
                           11,18,9,
                           8,1,10,
-                          19,7,9,
+                          9,19,7,
                           2,12,8,
                           11,13,17,
-                          13,15,5,
-                          14,17,16,
-                          19,6,15,
-                          15,12,18,
-                          8,17,19,
-                          10,18,16
+                          3,14,12,
+                          5,15,13,
+                          14,16,17,
+                          6,15,19,
+                          12,15,18,
+                          17,8,19,
+                          16,18,10
                           };
 
 Hazzard RoomHaz[20];
@@ -37,12 +39,14 @@ struct Room{
 void SetNextRoom(uint8_t Choice){
   uint8_t Index = 3*CurRoom.con[Choice];
   CurRoom.Haz = RoomHaz[CurRoom.con[Choice]];
+  CurRoom.Room = CurRoom.con[Choice];
   CurRoom.con[0] = pgm_read_byte(&Cons[Index++]);
   CurRoom.con[1] = pgm_read_byte(&Cons[Index++]);
   CurRoom.con[2] = pgm_read_byte(&Cons[Index++]);
 }
 
 void RandomiseRooms(){
+  for (uint8_t i=0;i<20;i++){RoomHaz[i] = Hazzard::None;}
   uint8_t Hazzards = 0;
   do {
     uint8_t r = random(0,19);
@@ -61,6 +65,21 @@ void RandomiseRooms(){
       Place = true;
       }
   } while(Place != true);
+
+  Place = false;
+  do {
+    uint8_t r = random(0,19);
+    if (RoomHaz[r] == Hazzard::None)
+      {
+      CurRoom.Room = r;
+      uint8_t Index = 3*r;
+      CurRoom.con[0] = pgm_read_byte(&Cons[Index++]);
+      CurRoom.con[1] = pgm_read_byte(&Cons[Index++]);
+      CurRoom.con[2] = pgm_read_byte(&Cons[Index++]);
+      Place = true;
+      }
+  } while(Place != true);
+  
 }
 
 Hazzard GetHazzard(uint8_t Room){

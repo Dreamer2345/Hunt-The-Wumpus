@@ -1,5 +1,10 @@
 #pragma once
 
+void LevelStart(){
+  RandomiseRooms();
+  Points = 0;
+  gamestate = GameState::Update;
+}
 
 void Wumpdeath(){
   if (Usable == 0){
@@ -22,7 +27,7 @@ void Wumpdeath(){
       ard.setCursor(CENTERX-51,CENTERY+17);
       ard.print(F("A Wumpus ate you!"));
       if (ard.justPressed(A_BUTTON)){
-        gamestate = GameState::Pit;
+        gamestate = GameState::StartGame;
         Usable = 0;
       }
     }
@@ -51,9 +56,78 @@ void PitDeath(){
     ard.setCursor(CENTERX-54,CENTERY+17);
       ard.print(F("You Fell in a Pit!"));
       if (ard.justPressed(A_BUTTON)){
-        gamestate = GameState::Wumpus;
+        gamestate = GameState::StartGame;
         Usable = 0;
       }
   }
 }
+
+void MovePlayer(){
+      if (ard.justPressed(LEFT_BUTTON)){
+        SetNextRoom(0);
+      } else
+      if (ard.justPressed(RIGHT_BUTTON)){
+        SetNextRoom(1);
+      } else
+      if (ard.justPressed(DOWN_BUTTON)){
+        SetNextRoom(2);
+      }
+}
+
+void CheckMove(){
+  Hazzard rhzd = GetHazzard(CurRoom.Room);
+  switch(rhzd){
+    case Hazzard::Pit:gamestate = GameState::Pit; break;
+    case Hazzard::Wumpus:gamestate = GameState::Wumpus; break;
+    case Hazzard::Bat:if(random(0,10) == 0){bool Place = false;
+                                            do {
+                                              uint8_t r = random(0,19);
+                                              if (RoomHaz[r] == Hazzard::None)
+                                                {
+                                                CurRoom.Room = r;
+                                                uint8_t Index = 3*r;
+                                                CurRoom.con[0] = pgm_read_byte(&Cons[Index++]);
+                                                CurRoom.con[1] = pgm_read_byte(&Cons[Index++]);
+                                                CurRoom.con[2] = pgm_read_byte(&Cons[Index++]);
+                                                Place = true;
+                                                }
+                                            } while(Place != true);
+                                           }
+  }
+}
+
+void Draw(){
+  ard.drawCircle(CENTERX-20,CENTERY-20,10);
+  ard.drawCircle(CENTERX+20,CENTERY-20,10);
+  ard.drawCircle(CENTERX,CENTERY+20,10);
+  ard.drawCircle(CENTERX,CENTERY-5,10);
+  ard.setCursor(CENTERX-26,CENTERY-23);
+  ard.print(CurRoom.con[0]);
+  ard.setCursor(CENTERX+16,CENTERY-23);
+  ard.print(CurRoom.con[1]);
+  ard.setCursor(CENTERX-5,CENTERY-8);
+  ard.print(CurRoom.Room);
+  ard.setCursor(CENTERX-6,CENTERY+18);
+  ard.print(CurRoom.con[2]);
+
+  for (uint8_t i=0;i<3;i++){
+    if(GetHazzard(CurRoom.con[i]) == Hazzard::Pit){
+        sprites.drawSelfMasked(CENTERX+20,CENTERY,Snowflake,0);
+        break;
+    }
+  }
+  for (uint8_t i=0;i<3;i++){
+    if(GetHazzard(CurRoom.con[i]) == Hazzard::Wumpus){
+        sprites.drawSelfMasked(CENTERX-30,CENTERY,Stink,0);
+        break;
+    }
+  }
+}
+
+void Update(){
+  MovePlayer();
+  CheckMove();
+  Draw();
+}
+
 
